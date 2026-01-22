@@ -1,0 +1,11 @@
+# Visual Studio specific
+.vs/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.user
+*.aps
+*.opendb
+*.pdb
+*.VC.db
