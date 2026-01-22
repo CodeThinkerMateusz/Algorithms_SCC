@@ -11,10 +11,10 @@ void DFS(vector<vector<int>>& graph, int u, vector<bool> &checked, stack<int> &m
 	if (checked[u])return;
 	checked[u] = true;
 	for (int i = 0; i < graph[u].size(); i++) {
-		if (!checked[graph[u][i]]) {
-			checked[graph[u][i]] = true;
+		//if (!checked[graph[u][i]]) {
+			//checked[graph[u][i]] = true;
 			DFS(graph, graph[u][i], checked, mystack);
-		}
+		//}
 	}
 	mystack.push(u);
 }
@@ -34,6 +34,19 @@ void make_Transposed(vector<vector<int>>&graphT, vector<vector<int>>&graph, int 
 		for (int v : graph[u]) {
 			graphT[v].push_back(u);
 		}
+	}
+}
+
+void DFS2(int v, vector<vector<int>>& graphT, vector<int>&component, int idx, vector<bool>&checked, vector<int>&	count) {
+	if (checked[v])return;
+	checked[v] = true;
+	count[idx]++;
+	component[v] = idx;
+	for (int i = 0; i < graphT[v].size(); i++) {
+		//if (!checked[graphT[v][i]]) {
+			//checked[graphT[v][i]] = true;
+		DFS2(graphT[v][i], graphT, component, idx ,checked,count);
+		//}
 	}
 }
 
@@ -57,9 +70,40 @@ int main() {
 			DFS(graph, u, checked, mystack);
 		}
 		//nie wiem  czy sprawdzenie czy cala  tablica  jest  checked  jest  potrzbene
-		make_Transposed(graph, graphT, n);
-		
-	}
+		make_Transposed(graphT, graph, n);
 
+		vector<int> component(n,0);
+		//clear  the  checked  vaector 
+		vector<bool> checked2(n, false);
+		int idx = 0;
+		int v;
+		vector<int> component_count(n, 0);
+		while (!mystack.empty()) {
+			v = mystack.top();
+			mystack.pop();
+			if (!checked2[v]) {
+				DFS2(v, graphT, component, idx, checked2, component_count);
+				idx++;
+			}
+		}
+		vector<bool>IsNotSink(idx, false);
+
+		for (int u = 0; u < graph.size(); u++) {
+			for (int v : graph[u]) {
+				int c1 = component[u];
+				int c2 = component[v];
+				if (c1 != c2) {
+					IsNotSink[c1] = true;
+				}
+			}
+		}
+		int min = INT_MAX;
+		for (int i = 0; i < idx; i++) {
+			if (IsNotSink[i] == false) {
+				if (component_count[i] < min)min = component_count[i];
+			}
+		}
+		cout << min << endl;
+	}
 	return 0;
 }
